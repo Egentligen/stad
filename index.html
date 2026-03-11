@@ -1,27 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swedish Cities Map</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swedish Cities Map</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <h1>Swedish Cities Map</h1>
-    <div class="input-container">
-        <input type="text" id="cityInput" placeholder="Enter a Swedish city...">
-        <button id="searchButton">Search</button>
-    </div>
-    <div class="map-container">
-        <div class="zoom-controls">
-            <button id="zoomIn">+</button>
-            <button id="zoomOut">-</button>
-        </div>
-        <div class="image-box">
-            <img id="swedenMap" src="map.png" alt="Map of Sweden">
-        </div>
-    </div>
-    <div id="cityInfo"></div>
-    <script src="script.js"></script>
+
+<h1>Swedish Cities Map</h1>
+
+<div class="input-container">
+<input type="text" id="cityInput" placeholder="Enter a Swedish city...">
+<button id="searchButton">Search</button>
+</div>
+
+<div class="map-container">
+
+<div class="zoom-controls">
+<button id="zoomIn">+</button>
+<button id="zoomOut">-</button>
+</div>
+
+<div class="image-box">
+
+<div id="mapWrapper">
+
+<img id="swedenMap" src="map.png" alt="Map of Sweden">
+
+<div id="markerLayer"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="cityInfo"></div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
