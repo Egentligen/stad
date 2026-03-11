@@ -1,13 +1,13 @@
 // Sweden bounding box
-const swedenBoundingBox={
+const swedenBoundingBox = {
 minLat:55,
 minLng:11,
 maxLat:69,
 maxLng:24
 };
 
-// Cities
-const swedishCities={
+// Swedish cities
+const swedishCities = {
 Stockholm:{lat:59.3293,lng:18.0686,population:1634299},
 Gothenburg:{lat:57.7089,lng:11.9746,population:607882},
 Malmö:{lat:55.6049,lng:13.0038,population:358474},
@@ -20,75 +20,89 @@ Jönköping:{lat:57.7815,lng:14.1562,population:100208},
 Norrköping:{lat:58.5847,lng:16.1827,population:98396}
 };
 
-const markerLayer=document.getElementById("markerLayer");
-const mapWrapper=document.getElementById("mapWrapper");
+const mapWrapper = document.getElementById("mapWrapper");
+const mapImage = document.getElementById("swedenMap");
+const markerLayer = document.getElementById("markerLayer");
 
-let zoomLevel=1;
-let panX=0;
-let panY=0;
+// disable browser image dragging
+mapImage.addEventListener("dragstart", e => e.preventDefault());
 
-let isDragging=false;
-let startX=0;
-let startY=0;
+let zoomLevel = 1;
+let panX = 0;
+let panY = 0;
 
-// apply transform
+let isDragging = false;
+let startX = 0;
+let startY = 0;
+
+// update transform (pan + zoom)
 function updateTransform(){
-mapWrapper.style.transform=
-`translate(${panX}px,${panY}px) scale(${zoomLevel})`;
+mapWrapper.style.transform =
+`translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
 }
 
-// convert coordinates
+// convert lat/lng → percent
 function latLngToPercent(lat,lng){
 
-const latRatio=(lat-swedenBoundingBox.minLat)/
-(swedenBoundingBox.maxLat-swedenBoundingBox.minLat);
+const latRatio =
+(lat - swedenBoundingBox.minLat) /
+(swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
-const lngRatio=(lng-swedenBoundingBox.minLng)/
-(swedenBoundingBox.maxLng-swedenBoundingBox.minLng);
+const lngRatio =
+(lng - swedenBoundingBox.minLng) /
+(swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
 
 return{
-x:lngRatio*100,
-y:(1-latRatio)*100
+x: lngRatio * 100,
+y: (1 - latRatio) * 100
 };
 
 }
 
 // zoom buttons
-document.getElementById("zoomIn").onclick=()=>{
-zoomLevel+=0.2;
+document.getElementById("zoomIn").onclick = () => {
+
+zoomLevel += 0.2;
 updateTransform();
+
 };
 
-document.getElementById("zoomOut").onclick=()=>{
-zoomLevel=Math.max(.4,zoomLevel-.2);
+document.getElementById("zoomOut").onclick = () => {
+
+zoomLevel = Math.max(0.4, zoomLevel - 0.2);
 updateTransform();
+
 };
 
-// SEARCH
-document.getElementById("searchButton").onclick=()=>{
+// search for city
+document.getElementById("searchButton").onclick = () => {
 
-const cityName=document.getElementById("cityInput").value.trim();
+const cityName =
+document.getElementById("cityInput").value.trim();
 
 if(!swedishCities[cityName]){
 alert("City not found");
 return;
 }
 
-const city=swedishCities[cityName];
+const city = swedishCities[cityName];
 
-const pos=latLngToPercent(city.lat,city.lng);
+const pos = latLngToPercent(city.lat, city.lng);
 
-markerLayer.innerHTML="";
+// remove old markers
+markerLayer.innerHTML = "";
 
-const marker=document.createElement("div");
-marker.className="marker";
+// create marker
+const marker = document.createElement("div");
+marker.className = "marker";
 
-marker.style.left=pos.x+"%";
-marker.style.top=pos.y+"%";
+marker.style.left = pos.x + "%";
+marker.style.top = pos.y + "%";
 
 markerLayer.appendChild(marker);
 
-document.getElementById("cityInfo").innerHTML=`
+// show info
+document.getElementById("cityInfo").innerHTML = `
 
 <h2>${cityName}</h2>
 <p><strong>Population:</strong> ${city.population}</p>
@@ -97,32 +111,35 @@ document.getElementById("cityInfo").innerHTML=`
 
 };
 
-// PAN DRAGGING
+// start dragging
+mapWrapper.addEventListener("mousedown", e => {
 
-mapWrapper.addEventListener("mousedown",(e)=>{
+e.preventDefault();
 
-isDragging=true;
+isDragging = true;
 mapWrapper.classList.add("dragging");
 
-startX=e.clientX-panX;
-startY=e.clientY-panY;
+startX = e.clientX - panX;
+startY = e.clientY - panY;
 
 });
 
-document.addEventListener("mousemove",(e)=>{
+// drag movement
+document.addEventListener("mousemove", e => {
 
 if(!isDragging) return;
 
-panX=e.clientX-startX;
-panY=e.clientY-startY;
+panX = e.clientX - startX;
+panY = e.clientY - startY;
 
 updateTransform();
 
 });
 
-document.addEventListener("mouseup",()=>{
+// stop dragging
+document.addEventListener("mouseup", () => {
 
-isDragging=false;
+isDragging = false;
 mapWrapper.classList.remove("dragging");
 
 });
