@@ -14,10 +14,10 @@ let startY = 0;
 
 // Sweden bounding box
 const swedenBoundingBox = {
-  minLat: 55,
-  minLng: 11,
+  minLat: 55.3,
+  minLng: 11.1,
   maxLat: 69,
-  maxLng: 24
+  maxLng: 24.1
 };
 
 // Swedish cities
@@ -133,5 +133,6 @@ mapWrapper.addEventListener("wheel", e => {
   panY = mouseY - worldY * zoomLevel;
   updateTransform();
 });
+
 
 
