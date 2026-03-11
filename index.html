@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titel</title>
+    <title>Swedish Cities Map</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Include Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>This is my first webpage created with VS Code.</p>
-
-    <!-- Add a text input field -->
-    <label for="textInput">Enter your text:</label>
-    <input type="text" id="textInput" placeholder="Type something...">
+    <h1>Swedish Cities Map</h1>
+    <div class="input-container">
+        <input type="text" id="cityInput" placeholder="Enter a Swedish city...">
+        <button id="searchButton">Search</button>
+    </div>
+    <div id="map"></div>
+    <div id="cityInfo"></div>
+    <!-- Include Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
+
+
