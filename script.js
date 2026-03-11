@@ -74,16 +74,22 @@ function latLngToPercent(lat, lng){
 // Search city
 document.getElementById("searchButton").onclick = () => {
   const cityName = document.getElementById("cityInput").value.trim();
-  if (!swedishCities[cityName]) { alert("City not found"); return; }
+  if (!swedishCities[cityName]) { 
+    alert("City not found"); 
+    return; 
+  }
 
   const city = swedishCities[cityName];
   const pos = latLngToPercent(city.lat, city.lng);
 
-  markerLayer.innerHTML = "";
+  // Do NOT clear markerLayer anymore
+  // markerLayer.innerHTML = "";
+
   const marker = document.createElement("div");
   marker.className = "marker";
   marker.style.left = pos.x + "px";
   marker.style.top = pos.y + "px";
+  marker.title = cityName; // optional: hover to see city name
   markerLayer.appendChild(marker);
 
   document.getElementById("cityInfo").innerHTML = `
@@ -133,6 +139,7 @@ mapWrapper.addEventListener("wheel", e => {
   panY = mouseY - worldY * zoomLevel;
   updateTransform();
 });
+
 
 
 
