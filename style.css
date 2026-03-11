@@ -48,48 +48,42 @@ overflow:hidden;
 width:100%;
 height:500px;
 overflow:hidden;
-display:flex;
-align-items:center;
-justify-content:center;
+position:relative;
 background:#f5f5f5;
 }
 
-/* Map wrapper (this is what zooms and pans) */
 #mapWrapper{
-position:relative;
+position:absolute;
+top:0;
+left:0;
 width:100%;
 height:100%;
-transform-origin:center;
+transform-origin:0 0;
 cursor:grab;
 }
 
-/* Cursor while dragging */
 #mapWrapper.dragging{
 cursor:grabbing;
 }
 
-/* Map image */
 #swedenMap{
 width:100%;
 height:100%;
 object-fit:contain;
 display:block;
-
-/* prevent browser image dragging */
 user-select:none;
 pointer-events:none;
 }
 
-/* Layer that holds markers */
 #markerLayer{
 position:absolute;
 top:0;
 left:0;
 width:100%;
 height:100%;
+pointer-events:none;
 }
 
-/* City marker */
 .marker{
 position:absolute;
 width:18px;
@@ -100,7 +94,6 @@ border:2px solid white;
 transform:translate(-50%,-50%);
 }
 
-/* Zoom buttons */
 .zoom-controls{
 position:absolute;
 top:10px;
@@ -119,7 +112,6 @@ border-radius:3px;
 cursor:pointer;
 }
 
-/* City info box */
 #cityInfo{
 margin-top:20px;
 padding:10px;
