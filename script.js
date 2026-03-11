@@ -74,6 +74,38 @@ updateTransform();
 
 };
 
+// mouse wheel zoom centered on cursor
+mapWrapper.addEventListener("wheel", (e) => {
+
+e.preventDefault();
+
+const zoomSpeed = 0.1;
+
+const rect = mapWrapper.getBoundingClientRect();
+
+// mouse position inside map
+const mouseX = e.clientX - rect.left;
+const mouseY = e.clientY - rect.top;
+
+// world position before zoom
+const worldX = (mouseX - panX) / zoomLevel;
+const worldY = (mouseY - panY) / zoomLevel;
+
+// zoom direction
+if(e.deltaY < 0){
+zoomLevel += zoomSpeed;
+}else{
+zoomLevel = Math.max(0.4, zoomLevel - zoomSpeed);
+}
+
+// adjust pan so cursor stays on same map point
+panX = mouseX - worldX * zoomLevel;
+panY = mouseY - worldY * zoomLevel;
+
+updateTransform();
+
+});
+
 // search for city
 document.getElementById("searchButton").onclick = () => {
 
@@ -143,3 +175,4 @@ isDragging = false;
 mapWrapper.classList.remove("dragging");
 
 });
+
