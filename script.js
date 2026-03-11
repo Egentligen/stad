@@ -1,9 +1,9 @@
 // Bounding box for Sweden (minLat, minLng, maxLat, maxLng)
 const swedenBoundingBox = {
-    minLat: 55.0,
-    minLng: 11.0,
+    minLat: 55.3,
+    minLng: 11.2,
     maxLat: 69.0,
-    maxLng: 24.0
+    maxLng: 24.1,
 };
 
 const swedishCities = {
@@ -59,6 +59,7 @@ document.getElementById('searchButton').addEventListener('click', () => {
         alert("City not found. Please try another Swedish city.");
     }
 });
+
 
 
 
