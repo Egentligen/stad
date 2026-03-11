@@ -40,10 +40,35 @@ function updateTransform(){
 }
 
 // Convert lat/lng → % relative to image
-function latLngToPercent(lat,lng){
-  const latRatio = (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
-  const lngRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
-  return { x: lngRatio * 100, y: (1 - latRatio) * 100 };
+function latLngToPercent(lat, lng){
+    // Map bounding box ratios
+    const latRatio = (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
+    const lngRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
+
+    // Adjust for image aspect ratio
+    // The image might be taller than wider, so we scale the x-axis to fit
+    // assuming the map is centered horizontally
+    const imgAspect = mapImage.naturalWidth / mapImage.naturalHeight;
+    const containerAspect = mapImage.offsetWidth / mapImage.offsetHeight;
+
+    let x, y;
+    if(containerAspect > imgAspect){
+        // container is wider than image → add horizontal padding
+        const scale = mapImage.offsetHeight / mapImage.naturalHeight;
+        const imgWidthScaled = mapImage.naturalWidth * scale;
+        const paddingX = (mapImage.offsetWidth - imgWidthScaled) / 2;
+        x = paddingX + lngRatio * imgWidthScaled;
+        y = (1 - latRatio) * mapImage.offsetHeight;
+    } else {
+        // container is taller than image → add vertical padding
+        const scale = mapImage.offsetWidth / mapImage.naturalWidth;
+        const imgHeightScaled = mapImage.naturalHeight * scale;
+        const paddingY = (mapImage.offsetHeight - imgHeightScaled) / 2;
+        x = lngRatio * mapImage.offsetWidth;
+        y = paddingY + (1 - latRatio) * imgHeightScaled;
+    }
+
+    return { x, y };
 }
 
 // Search city
@@ -108,3 +133,4 @@ mapWrapper.addEventListener("wheel", e => {
   panY = mouseY - worldY * zoomLevel;
   updateTransform();
 });
+
