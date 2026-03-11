@@ -82,8 +82,8 @@ document.getElementById("searchButton").onclick = () => {
   markerLayer.innerHTML = "";
   const marker = document.createElement("div");
   marker.className = "marker";
-  marker.style.left = pos.x + "%";
-  marker.style.top = pos.y + "%";
+  marker.style.left = pos.x + "px";
+  marker.style.top = pos.y + "px";
   markerLayer.appendChild(marker);
 
   document.getElementById("cityInfo").innerHTML = `
@@ -133,4 +133,5 @@ mapWrapper.addEventListener("wheel", e => {
   panY = mouseY - worldY * zoomLevel;
   updateTransform();
 });
+
 
