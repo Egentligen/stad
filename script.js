@@ -143,46 +143,33 @@ function showMarker(lat, lng, cityName, population) {
 
 // Search city using GeoNames on GitHub Pages (via CORS proxy)
 async function searchCity(cityName) {
-    if (!cityName) return;
 
-    // GeoNames API URL
-    const geonamesUrl = `https://cors-anywhere.herokuapp.com/http://api.geonames.org/searchJSON?q=${encodeURIComponent(cityName)}&maxRows=1&country=SE&username=stad1`;
-
-    // Use AllOrigins proxy to bypass CORS
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(geonamesUrl)}`;
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&countrycodes=se&format=json&limit=1`;
 
     try {
-        const response = await fetch(proxyUrl);
-        const proxyData = await response.json();
 
-        // GeoNames data is inside proxyData.contents as a string
-        const data = JSON.parse(proxyData.contents);
+        const response = await fetch(url);
 
-        if (!data.geonames || data.geonames.length === 0) {
+        const data = await response.json();
+
+        if (data.length === 0) {
             alert("City not found in Sweden");
             return;
         }
 
-        const city = data.geonames[0];
+        const city = data[0];
+
         const lat = parseFloat(city.lat);
-        const lng = parseFloat(city.lng);
-        const population = city.population || "Unknown";
+        const lng = parseFloat(city.lon);
 
-        // Ensure the city is inside Sweden bounding box
-        if (
-            lat < swedenBoundingBox.minLat || lat > swedenBoundingBox.maxLat ||
-            lng < swedenBoundingBox.minLng || lng > swedenBoundingBox.maxLng
-        ) {
-            alert("City is outside Sweden bounds");
-            return;
-        }
-
-        // Place the marker
-        showMarker(lat, lng, city.name, population);
+        showMarker(lat, lng, city.display_name, "Unknown");
 
     } catch (error) {
+
         console.error(error);
-        alert("Error contacting GeoNames. Make sure your username is correct and activated.");
+
+        alert("Error contacting location service");
+
     }
 }
 
