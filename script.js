@@ -141,14 +141,22 @@ function showMarker(lat, lng, cityName, population) {
     `;
 }
 
-// Search city using GeoNames (browser-friendly, Sweden only)
+// Search city using GeoNames on GitHub Pages (via CORS proxy)
 async function searchCity(cityName) {
-    // Make sure to replace YOUR_USERNAME with your GeoNames username
-    const url = `http://api.geonames.org/searchJSON?q=${encodeURIComponent(cityName)}&maxRows=1&country=SE&username=stad1`;
+    if (!cityName) return;
+
+    // GeoNames API URL
+    const geonamesUrl = `http://api.geonames.org/searchJSON?q=${encodeURIComponent(cityName)}&maxRows=1&country=SE&username=stad1`;
+
+    // Use AllOrigins proxy to bypass CORS
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(geonamesUrl)}`;
 
     try {
-        const response = await fetch(url);
-        const data = await response.json();
+        const response = await fetch(proxyUrl);
+        const proxyData = await response.json();
+
+        // GeoNames data is inside proxyData.contents as a string
+        const data = JSON.parse(proxyData.contents);
 
         if (!data.geonames || data.geonames.length === 0) {
             alert("City not found in Sweden");
@@ -160,7 +168,7 @@ async function searchCity(cityName) {
         const lng = parseFloat(city.lng);
         const population = city.population || "Unknown";
 
-        // Check if the city is inside the Sweden bounding box
+        // Ensure the city is inside Sweden bounding box
         if (
             lat < swedenBoundingBox.minLat || lat > swedenBoundingBox.maxLat ||
             lng < swedenBoundingBox.minLng || lng > swedenBoundingBox.maxLng
@@ -169,7 +177,7 @@ async function searchCity(cityName) {
             return;
         }
 
-        // Show the marker
+        // Place the marker
         showMarker(lat, lng, city.name, population);
 
     } catch (error) {
