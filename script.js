@@ -53,16 +53,18 @@ loadCities();
 // Prevent image drag
 mapImage.addEventListener("dragstart", e => e.preventDefault());
 
-// Convert lat/lng to map pixel position
+// Convert lat/lng to image position (fixed)
 function latLngToImagePosition(lat, lng) {
+
     const latRange = swedenBoundingBox.maxLat - swedenBoundingBox.minLat;
     const lngRange = swedenBoundingBox.maxLng - swedenBoundingBox.minLng;
 
+    // ratio from 0 to 1
     const xRatio = (lng - swedenBoundingBox.minLng) / lngRange;
-    const yRatio = 1 - (lat - swedenBoundingBox.minLat) / latRange;
+    const yRatio = (swedenBoundingBox.maxLat - lat) / latRange; // inverted Y
 
-    const imgWidth = mapImage.clientWidth;
-    const imgHeight = mapImage.clientHeight;
+    const imgWidth = mapImage.naturalWidth;  // use naturalWidth for consistent scaling
+    const imgHeight = mapImage.naturalHeight;
 
     return {
         x: xRatio * imgWidth,
@@ -122,7 +124,6 @@ function clearMarkers() {
 }
 
 function showMarker(lat, lng, cityName, population) {
-    clearMarkers();
 
     const pos = latLngToImagePosition(lat, lng);
 
@@ -131,8 +132,9 @@ function showMarker(lat, lng, cityName, population) {
     marker.style.left = pos.x + "px";
     marker.style.top = pos.y + "px";
 
-    imageBox.appendChild(marker);
+    imageBox.appendChild(marker); // imageBox is inside mapWrapper
 
+    // Update city info (optional, keeps latest city info)
     cityInfo.innerHTML = `
         <h2>${cityName}</h2>
         <p><strong>Population:</strong> ${population}</p>
