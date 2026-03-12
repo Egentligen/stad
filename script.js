@@ -11,6 +11,9 @@ let cities = [];
 let zoomLevel = 1, panX = 0, panY = 0;
 let isDragging = false, startX, startY;
 
+let namedCities = new Set();
+let totalPopulation = 0;
+
 // Load city data
 async function loadCities() {
     const res = await fetch("data/swedenCities.json");
@@ -20,8 +23,9 @@ async function loadCities() {
 loadCities();
 
 // -------------------
-// Panning (click and drag anywhere in imageBox)
+// Panning
 // -------------------
+
 imageBox.addEventListener("mousedown", e => {
     isDragging = true;
     startX = e.clientX - panX;
@@ -40,22 +44,57 @@ window.addEventListener("mouseup", () => {
 });
 
 // -------------------
-// Zoom buttons
+// Zoom controls
 // -------------------
-zoomIn.addEventListener("click", () => { zoomLevel *= 1.2; updateTransform(); });
-zoomOut.addEventListener("click", () => { zoomLevel /= 1.2; updateTransform(); });
+
+zoomIn.addEventListener("click", () => { 
+    zoomLevel *= 1.2; 
+    updateTransform(); 
+});
+
+zoomOut.addEventListener("click", () => {
+    zoomLevel /= 1.2; 
+    updateTransform(); 
+});
+
+imageBox.addEventListener("wheel", e => {
+    e.preventDefault(); // Prevent page scroll
+
+    const rect = imageBox.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left; // cursor X relative to imageBox
+    const mouseY = e.clientY - rect.top;  // cursor Y relative to imageBox
+
+    const zoomFactor = 1.1; // how much to zoom per scroll tick
+    const zoomOld = zoomLevel;
+
+    if (e.deltaY < 0) {
+        // scroll up = zoom in
+        zoomLevel *= zoomFactor;
+    } else {
+        // scroll down = zoom out
+        zoomLevel /= zoomFactor;
+    }
+
+    // Adjust pan so zoom centers on cursor
+    panX -= (mouseX - panX) * (zoomLevel / zoomOld - 1);
+    panY -= (mouseY - panY) * (zoomLevel / zoomOld - 1);
+
+    updateTransform();
+});
 
 // -------------------
 // Update map & marker transform
 // -------------------
+
 function updateTransform() {
     mapImage.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
     markerLayer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
 }
 
 // -------------------
-// Lat/lng -> displayed image position
+// Convert Lat/lng to displayed image position
 // -------------------
+
 function latLngToImagePosition(lat, lng) {
     const img = mapImage;
 
@@ -88,8 +127,6 @@ function latLngToImagePosition(lat, lng) {
 // -------------------
 // Show marker
 // -------------------
-let namedCities = new Set(); // Keep track of named cities
-let totalPopulation = 0;
 
 function showMarker(city) {
     // If this city hasn't been named before, count it
@@ -104,9 +141,9 @@ function showMarker(city) {
     marker.className = "marker";
 
     // Scale marker by population (normalize between 10px and 50px)
-    const minSize = 10, maxSize = 50;
-    const minPop = 5000;   // adjust based on your dataset
-    const maxPop = 2000000; // adjust based on your dataset
+    const minSize = 2, maxSize = 50;
+    const minPop = 500;   // adjust based on your dataset
+    const maxPop = 2454821; // adjust based on your dataset
     let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
     size = Math.max(minSize, Math.min(size, maxSize));
     marker.style.width = size + "px";
@@ -115,17 +152,12 @@ function showMarker(city) {
     marker.style.left = pos.x + "px";
     marker.style.top = pos.y + "px";
 
-    // Random slight color variation
-    const hue = 50 + Math.random() * 40; // yellow-orange range
-    marker.style.backgroundColor = `hsla(${hue}, 100%, 50%, 0.7)`;
-
     markerLayer.appendChild(marker);
 
     // Update city info
     cityInfo.innerHTML = `
         <h2>${city.name}</h2>
         <p><strong>Population:</strong> ${city.population}</p>
-        <p><strong>Coordinates:</strong> ${city.lat.toFixed(4)}, ${city.lng.toFixed(4)}</p>
     `;
 
     // Update stats
@@ -140,14 +172,15 @@ function updateStats() {
         cityInfo.appendChild(statsDiv);
     }
     statsDiv.innerHTML = `
-        Total cities named: ${namedCities.size}<br>
-        Total population named: ${totalPopulation.toLocaleString()}
+        Antal städer nämnda: ${namedCities.size}<br>
+        Total population: ${totalPopulation.toLocaleString()}
     `;
 }
 
 // -------------------
 // Search
 // -------------------
+
 document.getElementById("searchButton").addEventListener("click", () => {
     const name = document.getElementById("cityInput").value.trim().toLowerCase();
     const city = cities.find(c => c.name.toLowerCase() === name);
