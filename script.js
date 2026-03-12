@@ -122,17 +122,19 @@ function clearMarkers() {
 }
 
 function showMarker(lat, lng, cityName, population) {
-    clearMarkers();
+    // Clear old markers
+    markerLayer.innerHTML = "";
 
     const pos = latLngToImagePosition(lat, lng);
 
     const marker = document.createElement("div");
     marker.className = "marker";
-    marker.style.left = pos.x + "px";
-    marker.style.top = pos.y + "px";
 
-    // Append marker to mapWrapper, not imageBox
-    mapWrapper.appendChild(marker);
+    // Apply zoom and pan manually
+    marker.style.left = pos.x * zoomLevel + panX + "px";
+    marker.style.top  = pos.y * zoomLevel + panY + "px";
+
+    markerLayer.appendChild(marker);
 
     cityInfo.innerHTML = `
         <h2>${cityName}</h2>
