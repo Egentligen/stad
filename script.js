@@ -88,19 +88,60 @@ function latLngToImagePosition(lat, lng) {
 // -------------------
 // Show marker
 // -------------------
+let namedCities = new Set(); // Keep track of named cities
+let totalPopulation = 0;
+
 function showMarker(city) {
-    markerLayer.innerHTML = "";
+    // If this city hasn't been named before, count it
+    if (!namedCities.has(city.name)) {
+        namedCities.add(city.name);
+        totalPopulation += city.population;
+    }
+
+    // Map lat/lng to image position
     const pos = latLngToImagePosition(city.lat, city.lng);
     const marker = document.createElement("div");
     marker.className = "marker";
+
+    // Scale marker by population (normalize between 10px and 50px)
+    const minSize = 10, maxSize = 50;
+    const minPop = 5000;   // adjust based on your dataset
+    const maxPop = 2000000; // adjust based on your dataset
+    let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
+    size = Math.max(minSize, Math.min(size, maxSize));
+    marker.style.width = size + "px";
+    marker.style.height = size + "px";
+
     marker.style.left = pos.x + "px";
     marker.style.top = pos.y + "px";
+
+    // Random slight color variation
+    const hue = 50 + Math.random() * 40; // yellow-orange range
+    marker.style.backgroundColor = `hsla(${hue}, 100%, 50%, 0.7)`;
+
     markerLayer.appendChild(marker);
 
+    // Update city info
     cityInfo.innerHTML = `
         <h2>${city.name}</h2>
         <p><strong>Population:</strong> ${city.population}</p>
         <p><strong>Coordinates:</strong> ${city.lat.toFixed(4)}, ${city.lng.toFixed(4)}</p>
+    `;
+
+    // Update stats
+    updateStats();
+}
+
+function updateStats() {
+    let statsDiv = document.getElementById("stats");
+    if (!statsDiv) {
+        statsDiv = document.createElement("div");
+        statsDiv.id = "stats";
+        cityInfo.appendChild(statsDiv);
+    }
+    statsDiv.innerHTML = `
+        Total cities named: ${namedCities.size}<br>
+        Total population named: ${totalPopulation.toLocaleString()}
     `;
 }
 
