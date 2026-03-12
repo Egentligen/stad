@@ -12,7 +12,7 @@ let isDragging = false;
 let startX = 0;
 let startY = 0;
 
-// Sweden bounding box
+// Sweden bounding box s
 const swedenBoundingBox = {
   minLat: 55.3,
   minLng: 11.1,
