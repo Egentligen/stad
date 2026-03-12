@@ -46,32 +46,37 @@ function updateTransform() {
 // Marker functions
 // -------------------
 function latLngToImagePosition(lat, lng) {
-  const imgWidth = mapImage.clientWidth;
-  const imgHeight = mapImage.clientHeight;
-  const latRange = swedenBoundingBox.maxLat - swedenBoundingBox.minLat;
-  const lngRange = swedenBoundingBox.maxLng - swedenBoundingBox.minLng;
+    const img = mapImage;
 
-  const xRatio = (lng - swedenBoundingBox.minLng) / lngRange;
-  const yRatio = 1 - (lat - swedenBoundingBox.minLat) / latRange;
+    // Aspect ratios
+    const imgAspect = img.naturalWidth / img.naturalHeight;
+    const boxAspect = img.clientWidth / img.clientHeight;
 
-  return { x: xRatio * imgWidth, y: yRatio * imgHeight };
-}
+    let displayWidth, displayHeight, offsetX, offsetY;
 
-function showMarker(city) {
-  markerLayer.innerHTML = "";
-  const pos = latLngToImagePosition(city.lat, city.lng);
+    if (imgAspect > boxAspect) {
+        // Image fits width, vertical letterbox
+        displayWidth = img.clientWidth;
+        displayHeight = displayWidth / imgAspect;
+        offsetX = 0;
+        offsetY = (img.clientHeight - displayHeight) / 2;
+    } else {
+        // Image fits height, horizontal letterbox
+        displayHeight = img.clientHeight;
+        displayWidth = displayHeight * imgAspect;
+        offsetX = (img.clientWidth - displayWidth) / 2;
+        offsetY = 0;
+    }
 
-  const marker = document.createElement("div");
-  marker.className = "marker";
-  marker.style.left = pos.x + "px";
-  marker.style.top = pos.y + "px";
-  markerLayer.appendChild(marker);
+    // Compute normalized ratios
+    const xRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
+    const yRatio = 1 - (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
-  cityInfo.innerHTML = `
-    <h2>${city.name}</h2>
-    <p><strong>Population:</strong> ${city.population}</p>
-    <p><strong>Coordinates:</strong> ${city.lat.toFixed(4)}, ${city.lng.toFixed(4)}</p>
-  `;
+    // Convert to actual pixel positions
+    return {
+        x: xRatio * displayWidth + offsetX,
+        y: yRatio * displayHeight + offsetY
+    };
 }
 
 // -------------------
