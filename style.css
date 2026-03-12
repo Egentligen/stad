@@ -33,19 +33,14 @@ margin-left:10px;
   position: relative;
    width: 800px; max-width:
     100%; margin: auto; 
-  }
+}
 
 .image-box{ 
   position: relative;
    width: 100%; 
    height: 1100px; 
    background: #1E2026; 
-   cursor: grab; 
    overflow: hidden; 
-  }
-
-.image-box.dragging{ 
-  cursor: grabbing; 
 }
 
 #mapWrapper {

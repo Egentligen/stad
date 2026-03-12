@@ -27,20 +27,21 @@ loadCities();
 // -------------------
 
 imageBox.addEventListener("mousedown", e => {
+    e.preventDefault();
     isDragging = true;
     startX = e.clientX - panX;
     startY = e.clientY - panY;
-    imageBox.classList.add("dragging");
 });
+
 window.addEventListener("mousemove", e => {
     if (!isDragging) return;
     panX = e.clientX - startX;
     panY = e.clientY - startY;
     updateTransform();
 });
+
 window.addEventListener("mouseup", () => {
     isDragging = false;
-    imageBox.classList.remove("dragging");
 });
 
 // -------------------
@@ -104,17 +105,20 @@ function latLngToImagePosition(lat, lng) {
     let displayWidth, displayHeight, offsetX, offsetY;
 
     if (imgAspect > boxAspect) {
+        // Image wider than box
         displayWidth = img.clientWidth;
         displayHeight = displayWidth / imgAspect;
         offsetX = 0;
         offsetY = (img.clientHeight - displayHeight) / 2;
     } else {
+        // Image taller than box
         displayHeight = img.clientHeight;
         displayWidth = displayHeight * imgAspect;
         offsetX = (img.clientWidth - displayWidth) / 2;
         offsetY = 0;
     }
 
+    // Map latitude/longitude to x/y within the displayed image area
     const xRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
     const yRatio = 1 - (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
