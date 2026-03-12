@@ -141,9 +141,9 @@ function showMarker(city) {
     marker.className = "marker";
 
     // Scale marker by population
-    const minSize = 2, maxSize = 50;
-    const minPop = 500;
-    const maxPop = 800000;
+    const minSize = 5, maxSize = 40;
+    const minPop = 2000;
+    const maxPop = 900000;
     let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
     size = Math.max(minSize, Math.min(size, maxSize));
     marker.style.width = size + "px";
