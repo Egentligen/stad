@@ -141,39 +141,40 @@ function showMarker(lat, lng, cityName, population) {
     `;
 }
 
-// Search city using GeoNames
+// Search city using GeoNames (browser-friendly, Sweden only)
 async function searchCity(cityName) {
-
-    const url = `http://api.geonames.org/searchJSON?q=${cityName}&maxRows=1&country=SE&username=stad1`;
+    // Make sure to replace YOUR_USERNAME with your GeoNames username
+    const url = `http://api.geonames.org/searchJSON?q=${encodeURIComponent(cityName)}&maxRows=1&country=SE&username=____`;
 
     try {
-
         const response = await fetch(url);
-
         const data = await response.json();
 
-        if (data.geonames.length === 0) {
-
-            alert("City not found");
-
+        if (!data.geonames || data.geonames.length === 0) {
+            alert("City not found in Sweden");
             return;
-
         }
 
         const city = data.geonames[0];
-
         const lat = parseFloat(city.lat);
         const lng = parseFloat(city.lng);
         const population = city.population || "Unknown";
 
+        // Check if the city is inside the Sweden bounding box
+        if (
+            lat < swedenBoundingBox.minLat || lat > swedenBoundingBox.maxLat ||
+            lng < swedenBoundingBox.minLng || lng > swedenBoundingBox.maxLng
+        ) {
+            alert("City is outside Sweden bounds");
+            return;
+        }
+
+        // Show the marker
         showMarker(lat, lng, city.name, population);
 
     } catch (error) {
-
         console.error(error);
-
-        alert("Error contacting GeoNames");
-
+        alert("Error contacting GeoNames. Make sure your username is correct and activated.");
     }
 }
 
