@@ -18,6 +18,29 @@ let isDragging = false;
 let startX;
 let startY;
 
+// dataset
+let cities = [];
+
+// load cities from local file
+async function loadCities() {
+
+    try {
+
+        const response = await fetch("data/swedenCities.json");
+
+        cities = await response.json();
+
+        console.log("Cities loaded:", cities.length);
+
+    } catch (error) {
+
+        console.error("Failed to load city dataset", error);
+
+    }
+}
+
+loadCities();
+
 // Prevent image drag
 mapImage.addEventListener("dragstart", e => e.preventDefault());
 
@@ -41,22 +64,30 @@ function latLngToImagePosition(lat, lng) {
 
 // Update zoom and pan
 function updateTransform() {
+
     mapWrapper.style.transform =
         `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+
 }
 
 // Zoom buttons
 document.getElementById("zoomIn").addEventListener("click", () => {
+
     zoomLevel += 0.2;
+
     updateTransform();
+
 });
 
 document.getElementById("zoomOut").addEventListener("click", () => {
+
     zoomLevel = Math.max(0.2, zoomLevel - 0.2);
+
     updateTransform();
+
 });
 
-// Mouse wheel zoom centered on cursor
+// Mouse wheel zoom
 mapWrapper.addEventListener("wheel", (e) => {
 
     e.preventDefault();
@@ -74,21 +105,16 @@ mapWrapper.addEventListener("wheel", (e) => {
         zoomLevel /= zoomFactor;
     }
 
-    panX = mouseX - (mouseX - panX) * (zoomLevel / (zoomLevel / zoomFactor));
-    panY = mouseY - (mouseY - panY) * (zoomLevel / (zoomLevel / zoomFactor));
-
     updateTransform();
 
 }, { passive: false });
 
-// Drag / pan map
+// Drag map
 mapWrapper.addEventListener("mousedown", e => {
 
     e.preventDefault();
 
     isDragging = true;
-
-    mapWrapper.classList.add("dragging");
 
     startX = e.clientX - panX;
     startY = e.clientY - panY;
@@ -110,13 +136,13 @@ window.addEventListener("mouseup", () => {
 
     isDragging = false;
 
-    mapWrapper.classList.remove("dragging");
-
 });
 
 // Remove old markers
 function clearMarkers() {
+
     document.querySelectorAll(".marker").forEach(m => m.remove());
+
 }
 
 // Place marker
@@ -127,6 +153,7 @@ function showMarker(lat, lng, cityName, population) {
     const pos = latLngToImagePosition(lat, lng);
 
     const marker = document.createElement("div");
+
     marker.className = "marker";
 
     marker.style.left = pos.x + "px";
@@ -141,36 +168,28 @@ function showMarker(lat, lng, cityName, population) {
     `;
 }
 
-// Search city using GeoNames on GitHub Pages (via CORS proxy)
-async function searchCity(cityName) {
+// Search city in dataset
+function searchCity(cityName) {
 
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&countrycodes=se&format=json&limit=1`;
+    if (!cities.length) {
+        alert("City dataset still loading");
+        return;
+    }
 
-    try {
+    const city = cities.find(c =>
+        c.name.toLowerCase() === cityName.toLowerCase()
+    );
 
-        const response = await fetch(url);
+    if (!city) {
 
-        const data = await response.json();
+        alert("City not found");
 
-        if (data.length === 0) {
-            alert("City not found in Sweden");
-            return;
-        }
-
-        const city = data[0];
-
-        const lat = parseFloat(city.lat);
-        const lng = parseFloat(city.lon);
-
-        showMarker(lat, lng, city.display_name, "Unknown");
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert("Error contacting location service");
+        return;
 
     }
+
+    showMarker(city.lat, city.lng, city.name, city.population);
+
 }
 
 // Search button
