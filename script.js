@@ -9,6 +9,7 @@ const swedenBoundingBox = {
 const mapWrapper = document.getElementById("mapWrapper");
 const mapImage = document.getElementById("swedenMap");
 const imageBox = document.querySelector(".image-box");
+const cityInfo = document.getElementById("cityInfo");
 
 let zoomLevel = 1;
 let panX = 0;
@@ -18,35 +19,42 @@ let isDragging = false;
 let startX;
 let startY;
 
-// dataset
 let cities = [];
 
-// load cities from local file
+// ----------------------
+// Loading bar / message
+// ----------------------
 async function loadCities() {
+    cityInfo.innerHTML = "<p>Loading city data...</p>";
 
     try {
-
         const response = await fetch("data/swedenCities.json");
 
-        cities = await response.json();
+        // Optional: read as text to show progress (advanced)
+        const text = await response.text();
 
-        console.log("Cities loaded:", cities.length);
+        // Parse JSON
+        cities = JSON.parse(text);
+
+        cityInfo.innerHTML = `<p>City data loaded! (${cities.length} cities)</p>`;
 
     } catch (error) {
-
-        console.error("Failed to load city dataset", error);
-
+        console.error("Failed to load city dataset:", error);
+        cityInfo.innerHTML = "<p>Error loading city data.</p>";
     }
 }
 
 loadCities();
+
+// ----------------------
+// Map interactions
+// ----------------------
 
 // Prevent image drag
 mapImage.addEventListener("dragstart", e => e.preventDefault());
 
 // Convert lat/lng to map pixel position
 function latLngToImagePosition(lat, lng) {
-
     const latRange = swedenBoundingBox.maxLat - swedenBoundingBox.minLat;
     const lngRange = swedenBoundingBox.maxLng - swedenBoundingBox.minLng;
 
@@ -64,88 +72,55 @@ function latLngToImagePosition(lat, lng) {
 
 // Update zoom and pan
 function updateTransform() {
-
-    mapWrapper.style.transform =
-        `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
-
+    mapWrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
 }
 
 // Zoom buttons
 document.getElementById("zoomIn").addEventListener("click", () => {
-
     zoomLevel += 0.2;
-
     updateTransform();
-
 });
-
 document.getElementById("zoomOut").addEventListener("click", () => {
-
     zoomLevel = Math.max(0.2, zoomLevel - 0.2);
-
     updateTransform();
-
 });
 
 // Mouse wheel zoom
 mapWrapper.addEventListener("wheel", (e) => {
-
     e.preventDefault();
-
     const rect = mapWrapper.getBoundingClientRect();
-
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-
     const zoomFactor = 1.1;
 
-    if (e.deltaY < 0) {
-        zoomLevel *= zoomFactor;
-    } else {
-        zoomLevel /= zoomFactor;
-    }
+    if (e.deltaY < 0) zoomLevel *= zoomFactor;
+    else zoomLevel /= zoomFactor;
 
     updateTransform();
-
 }, { passive: false });
 
-// Drag map
+// Drag / pan
 mapWrapper.addEventListener("mousedown", e => {
-
     e.preventDefault();
-
     isDragging = true;
-
     startX = e.clientX - panX;
     startY = e.clientY - panY;
-
 });
-
 window.addEventListener("mousemove", e => {
-
     if (!isDragging) return;
-
     panX = e.clientX - startX;
     panY = e.clientY - startY;
-
     updateTransform();
-
 });
+window.addEventListener("mouseup", () => { isDragging = false; });
 
-window.addEventListener("mouseup", () => {
-
-    isDragging = false;
-
-});
-
-// Remove old markers
+// ----------------------
+// Markers
+// ----------------------
 function clearMarkers() {
-
     document.querySelectorAll(".marker").forEach(m => m.remove());
-
 }
 
-// Place marker
 function showMarker(lat, lng, cityName, population) {
     clearMarkers();
 
@@ -156,21 +131,21 @@ function showMarker(lat, lng, cityName, population) {
     marker.style.left = pos.x + "px";
     marker.style.top = pos.y + "px";
 
-    // Append to markerLayer instead of imageBox
-    document.getElementById("markerLayer").appendChild(marker);
+    imageBox.appendChild(marker);
 
-    document.getElementById("cityInfo").innerHTML = `
+    cityInfo.innerHTML = `
         <h2>${cityName}</h2>
         <p><strong>Population:</strong> ${population}</p>
         <p><strong>Coordinates:</strong> ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
     `;
 }
 
-// Search city in dataset
+// ----------------------
+// Search
+// ----------------------
 function searchCity(cityName) {
-
     if (!cities.length) {
-        alert("City dataset still loading");
+        alert("City data still loading. Please wait...");
         return;
     }
 
@@ -179,26 +154,16 @@ function searchCity(cityName) {
     );
 
     if (!city) {
-
         alert("City not found");
-
         return;
-
     }
 
     showMarker(city.lat, city.lng, city.name, city.population);
-
 }
 
 // Search button
-document.getElementById("searchButton")
-.addEventListener("click", () => {
-
-    const cityName =
-        document.getElementById("cityInput").value.trim();
-
+document.getElementById("searchButton").addEventListener("click", () => {
+    const cityName = document.getElementById("cityInput").value.trim();
     if (!cityName) return;
-
     searchCity(cityName);
-
 });
