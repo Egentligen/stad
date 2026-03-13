@@ -3,7 +3,6 @@ const swedenBoundingBox = { minLat: 55.1, minLng: 11.1, maxLat: 69, maxLng: 24.4
 const mapImage = document.getElementById("swedenMap");
 const markerLayer = document.getElementById("markerLayer");
 const imageBox = document.getElementById("imageBox");
-const cityInfo = document.getElementById("cityInfo");
 const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
 
@@ -11,14 +10,14 @@ let cities = [];
 let zoomLevel = 1, panX = 0, panY = 0;
 let isDragging = false, startX, startY;
 
-let namedCities = 0;
+// Track unique cities
+let namedCities = new Set();
 let totalPopulation = 0;
 
 // Load city data
 async function loadCities() {
     const res = await fetch("data/swedenCities.json");
     cities = await res.json();
-    cityInfo.innerHTML = `<p>Loaded ${cities.length} cities</p>`;
 }
 loadCities();
 
@@ -59,24 +58,17 @@ zoomOut.addEventListener("click", () => {
 });
 
 imageBox.addEventListener("wheel", e => {
-    e.preventDefault(); // Prevent page scroll
-
+    e.preventDefault();
     const rect = imageBox.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left; // cursor X relative to imageBox
-    const mouseY = e.clientY - rect.top;  // cursor Y relative to imageBox
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-    const zoomFactor = 1.1; // how much to zoom per scroll tick
+    const zoomFactor = 1.1;
     const zoomOld = zoomLevel;
 
-    if (e.deltaY < 0) {
-        // scroll up = zoom in
-        zoomLevel *= zoomFactor;
-    } else {
-        // scroll down = zoom out
-        zoomLevel /= zoomFactor;
-    }
+    if (e.deltaY < 0) zoomLevel *= zoomFactor;
+    else zoomLevel /= zoomFactor;
 
-    // Adjust pan so zoom centers on cursor
     panX -= (mouseX - panX) * (zoomLevel / zoomOld - 1);
     panY -= (mouseY - panY) * (zoomLevel / zoomOld - 1);
 
@@ -93,39 +85,32 @@ function updateTransform() {
 }
 
 // -------------------
-// Convert Lat/lng to displayed image position
+// Lat/lng -> image coords
 // -------------------
 
 function latLngToImagePosition(lat, lng) {
     const img = mapImage;
-
     const imgAspect = img.naturalWidth / img.naturalHeight;
     const boxAspect = img.clientWidth / img.clientHeight;
 
     let displayWidth, displayHeight, offsetX, offsetY;
 
     if (imgAspect > boxAspect) {
-        // Image wider than box
         displayWidth = img.clientWidth;
         displayHeight = displayWidth / imgAspect;
         offsetX = 0;
         offsetY = (img.clientHeight - displayHeight) / 2;
     } else {
-        // Image taller than box
         displayHeight = img.clientHeight;
         displayWidth = displayHeight * imgAspect;
         offsetX = (img.clientWidth - displayWidth) / 2;
         offsetY = 0;
     }
 
-    // Map latitude/longitude to x/y within the displayed image area
     const xRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
     const yRatio = 1 - (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
-    return {
-        x: xRatio * displayWidth + offsetX,
-        y: yRatio * displayHeight + offsetY
-    };
+    return { x: xRatio * displayWidth + offsetX, y: yRatio * displayHeight + offsetY };
 }
 
 // -------------------
@@ -133,15 +118,14 @@ function latLngToImagePosition(lat, lng) {
 // -------------------
 
 function showMarker(city) {
-    // Count unique cities & total population
     if (!namedCities.has(city.name)) {
-        namedCities++;
+        namedCities.add(city.name);
         totalPopulation += city.population;
         updateStats();
     }
 
-    // Map lat/lng to image position
-    const pos = latLngToImagePosition(city.lat + 0.4, city.lng - 0.8);
+    const pos = latLngToImagePosition(city.lat, city.lng);
+
     const marker = document.createElement("div");
     marker.className = "marker";
 
@@ -149,13 +133,12 @@ function showMarker(city) {
     const minPop = 2000, maxPop = 900000;
     let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
     size = Math.max(minSize, Math.min(size, maxSize));
+
     marker.style.width = size + "px";
     marker.style.height = size + "px";
-
     marker.style.left = pos.x + "px";
     marker.style.top = pos.y + "px";
 
-    // Hover events
     const hoverBox = document.getElementById("cityInfoHover");
 
     marker.addEventListener("mouseenter", e => {
@@ -178,19 +161,12 @@ function showMarker(city) {
     markerLayer.appendChild(marker);
 }
 
-// Update total stats
-function updateStats() {
-    document.getElementById("totalCities").textContent = `Antal städer nämnda: ${namedCities.size}`;
-    document.getElementById("totalPopulation").textContent = `Total population: ${totalPopulation.toLocaleString()}`;
-}
+// -------------------
+// Update stats
+// -------------------
 
 function updateStats() {
-    let statsDiv = document.getElementById("stats");
-    if (!statsDiv) {
-        statsDiv = document.createElement("div");
-        statsDiv.id = "stats";
-        cityInfo.appendChild(statsDiv);
-    }
+    const statsDiv = document.getElementById("stats");
     statsDiv.innerHTML = `
         Antal städer nämnda: ${namedCities.size}<br>
         Total population: ${totalPopulation.toLocaleString()}
