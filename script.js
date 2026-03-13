@@ -11,7 +11,7 @@ let cities = [];
 let zoomLevel = 1, panX = 0, panY = 0;
 let isDragging = false, startX, startY;
 
-let namedCities = new Set();
+let namedCities = 0;
 let totalPopulation = 0;
 
 // Load city data
@@ -135,17 +135,16 @@ function latLngToImagePosition(lat, lng) {
 function showMarker(city) {
     // Count unique cities & total population
     if (!namedCities.has(city.name)) {
-        namedCities.add(city.name);
+        namedCities++;
         totalPopulation += city.population;
         updateStats();
     }
 
     // Map lat/lng to image position
-    const pos = latLngToImagePosition(city.lat, city.lng - 0.2);
+    const pos = latLngToImagePosition(city.lat + 0.4, city.lng - 0.8);
     const marker = document.createElement("div");
     marker.className = "marker";
 
-    // Scale marker by population
     const minSize = 5, maxSize = 40;
     const minPop = 2000, maxPop = 900000;
     let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
@@ -156,24 +155,24 @@ function showMarker(city) {
     marker.style.left = pos.x + "px";
     marker.style.top = pos.y + "px";
 
-    // Add hover effect
+    // Hover events
+    const hoverBox = document.getElementById("cityInfoHover");
+
     marker.addEventListener("mouseenter", e => {
-        const hoverBox = document.getElementById("cityInfoHover");
         document.getElementById("hoverCityName").textContent = city.name;
         document.getElementById("hoverCityPopulation").textContent = `Population: ${city.population.toLocaleString()}`;
-        hoverBox.style.left = e.clientX + 10 + "px";
-        hoverBox.style.top = e.clientY + 10 + "px";
         hoverBox.style.display = "block";
+        hoverBox.style.left = e.pageX + 10 + "px";
+        hoverBox.style.top = e.pageY + 10 + "px";
     });
 
     marker.addEventListener("mousemove", e => {
-        const hoverBox = document.getElementById("cityInfoHover");
-        hoverBox.style.left = e.clientX + 10 + "px";
-        hoverBox.style.top = e.clientY + 10 + "px";
+        hoverBox.style.left = e.pageX + 10 + "px";
+        hoverBox.style.top = e.pageY + 10 + "px";
     });
 
     marker.addEventListener("mouseleave", () => {
-        document.getElementById("cityInfoHover").style.display = "none";
+        hoverBox.style.display = "none";
     });
 
     markerLayer.appendChild(marker);
