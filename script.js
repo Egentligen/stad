@@ -140,8 +140,8 @@ function showMarker(city) {
 
     let pos = latLngToImagePosition(city.lat, city.lng);
 
-    pos.x -= xOffset * mapImage.clientWidth / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
-    pos.y += yOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
+    pos.x += xOffset * mapImage.clientWidth / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
+    pos.y -= yOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
     const marker = document.createElement("div");
     marker.className = "marker";
@@ -204,9 +204,17 @@ function updateStats() {
 // Search
 // -------------------
 
-document.getElementById("searchButton").addEventListener("click", () => {
-    const name = document.getElementById("cityInput").value.trim().toLowerCase();
-    const city = cities.find(c => c.name.toLowerCase() === name);
-    if (!city) return alert("City not found");
-    showMarker(city);
+const cityInput = document.getElementById("cityInput");
+
+cityInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        const name = cityInput.value.trim().toLowerCase();
+        const city = cities.find(c => c.name.toLowerCase() === name);
+        if (!city) {
+            alert("City not found");
+        } else {
+            showMarker(city);
+            cityInput.value = "";
+        }
+    }
 });
