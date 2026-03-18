@@ -21,8 +21,8 @@ const goteborgMarkerSizeRatio = 42.5;
 const malmoMarkerSizeRatio = 35;
 const minSize = 2, maxSize = 25;
 const minPop = 200, maxPop = 180000;
-const xOffset = 0.03;
-const yOffset = -0.13;
+const xOffset = 0.02;
+const yOffset = -0.125;
 const markerSize = 1;
 
 let namedCities = new Set();
@@ -141,7 +141,7 @@ function showMarker(city) {
     let pos = latLngToImagePosition(city.lat, city.lng);
 
     pos.x -= xOffset * mapImage.clientWidth / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
-    pos.y -= yOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
+    pos.y += yOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
     const marker = document.createElement("div");
     marker.className = "marker";
