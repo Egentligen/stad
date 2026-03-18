@@ -17,6 +17,11 @@
             <input type="text" id="cityInput" placeholder="Nämn någon svensk stad...">
         </div>
 
+        <div id="stats">
+            <p id="totalCities">Antal städer nämnda: 0</p>
+            <p id="totalPopulation">Total population: 0</p>
+        </div>
+
         <div class="zoom-controls">
             <button id="zoomIn">+</button>
             <button id="zoomOut">-</button>
@@ -30,10 +35,6 @@
         </div>
     </div>
     
-    <div id="stats">
-        <p id="totalCities">Antal städer nämnda: 0</p>
-        <p id="totalPopulation">Total population: 0</p>
-    </div>
 
     <div id="cityInfoHover" style="position:absolute; background:#f9f9f9; padding:5px 10px; border:1px solid #ccc; border-radius:4px; display:none; pointer-events:none; z-index:100;">
         <p id="hoverCityName"></p>
