@@ -1,4 +1,9 @@
-const swedenBoundingBox = { minLat: 55.1, minLng: 11.1, maxLat: 69, maxLng: 24.4 };
+const swedenBoundingBox = { 
+    minLat: 55.1, 
+    minLng: 11.1, 
+    maxLat: 69, 
+    maxLng: 24.4 
+};
 
 const mapImage = document.getElementById("swedenMap");
 const markerLayer = document.getElementById("markerLayer");
@@ -7,10 +12,19 @@ const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
 
 let cities = [];
+
 let zoomLevel = 1, panX = 0, panY = 0;
 let isDragging = false, startX, startY;
 
-// Track unique cities
+const stockholmMarkerSizeRatio = 50;
+const goteborgMarkerSizeRatio = 42.5;
+const malmoMarkerSizeRatio = 35;
+const minSize = 2, maxSize = 25;
+const minPop = 200, maxPop = 180000;
+const xOffset = 0.03;
+const yOffset = -0.13;
+const markerSize = 1;
+
 let namedCities = new Set();
 let totalPopulation = 0;
 
@@ -117,10 +131,6 @@ function latLngToImagePosition(lat, lng) {
 // Show marker
 // -------------------
 
-const STOCKHOLM_MARKER_SIZE = 50;
-const GOTHENBURG_MARKER_SIZE = 45;
-const MALMO_MARKER_SIZE = 40;
-
 function showMarker(city) {
     if (!namedCities.has(city.name)) {
         namedCities.add(city.name);
@@ -130,8 +140,8 @@ function showMarker(city) {
 
     let pos = latLngToImagePosition(city.lat, city.lng);
 
-    const northOffset = 0.12;
-    pos.y += northOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
+    pos.x -= xOffset * mapImage.clientWidth / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
+    pos.y -= yOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
     const marker = document.createElement("div");
     marker.className = "marker";
@@ -139,18 +149,16 @@ function showMarker(city) {
     let size;
     switch (city.name.toLowerCase()) {
         case "stockholm":
-            size = STOCKHOLM_MARKER_SIZE; break;
+            size = stockholmMarkerSizeRatio * markerSize; break;
         case "göteborg":
         case "goteborg":
-            size = GOTHENBURG_MARKER_SIZE; break;
+            size = goteborgMarkerSizeRatio * markerSize; break;
         case "malmö":
         case "malmo":
-            size = MALMO_MARKER_SIZE; break;
+            size = malmoMarkerSizeRatio * markerSize; break;
         default:
-            const minSize = 5, maxSize = 25;
-            const minPop = 200, maxPop = 180000;
             size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
-            size = Math.max(minSize, Math.min(size, maxSize));
+            size = Math.max(minSize, Math.min(size, maxSize)) * markerSize;
     }
 
     marker.style.width = size + "px";
