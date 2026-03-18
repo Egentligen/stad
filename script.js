@@ -61,30 +61,59 @@ window.addEventListener("mouseup", () => {
 // Zoom controls
 // -------------------
 
-zoomIn.addEventListener("click", () => { 
-    zoomLevel *= 1.2; 
-    updateTransform(); 
+function zoomAtPoint(centerX, centerY, zoomFactor) {
+    const oldZoom = zoomLevel;
+    zoomLevel *= zoomFactor;
+
+    const scale = zoomLevel / oldZoom;
+
+    // Adjust pan so zoom is centered on given point
+    panX = centerX - (centerX - panX) * scale;
+    panY = centerY - (centerY - panY) * scale;
+
+    updateTransform();
+}
+
+// Zoom in button
+zoomIn.addEventListener("click", () => {
+    const rect = imageBox.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    zoomAtPoint(centerX, centerY, 1.2);
 });
 
+// Zoom out button
 zoomOut.addEventListener("click", () => {
-    zoomLevel /= 1.2; 
-    updateTransform(); 
+    const rect = imageBox.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    zoomAtPoint(centerX, centerY, 1 / 1.2);
 });
 
 imageBox.addEventListener("wheel", e => {
     e.preventDefault();
+
     const rect = imageBox.getBoundingClientRect();
+
+    // Mouse position inside the container
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
     const zoomFactor = 1.1;
-    const zoomOld = zoomLevel;
+    const oldZoom = zoomLevel;
 
+    // Update zoom
     if (e.deltaY < 0) zoomLevel *= zoomFactor;
     else zoomLevel /= zoomFactor;
 
-    panX -= (mouseX - panX) * (zoomLevel / zoomOld - 1);
-    panY -= (mouseY - panY) * (zoomLevel / zoomOld - 1);
+    // Calculate scale change
+    const scale = zoomLevel / oldZoom;
+
+    // Adjust pan so zoom happens around cursor
+    panX = mouseX - (mouseX - panX) * scale;
+    panY = mouseY - (mouseY - panY) * scale;
 
     updateTransform();
 });
