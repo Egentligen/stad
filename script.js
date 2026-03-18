@@ -21,8 +21,8 @@ const goteborgMarkerSizeRatio = 37.5;
 const malmoMarkerSizeRatio = 30;
 const minSize = 3, maxSize = 20;
 const minPop = 200, maxPop = 180000;
-const xOffset = 0.0075;
-const yOffset = -0.17;
+const xOffset = 0;
+const yOffset = 0.34;
 const markerSize = 1;
 
 let namedCities = new Set();
