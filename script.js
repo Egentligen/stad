@@ -130,7 +130,7 @@ function showMarker(city) {
 
     let pos = latLngToImagePosition(city.lat, city.lng);
 
-    const northOffset = 0.35;
+    const northOffset = 0.12;
     pos.y += northOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
     const marker = document.createElement("div");
@@ -147,8 +147,8 @@ function showMarker(city) {
         case "malmo":
             size = MALMO_MARKER_SIZE; break;
         default:
-            const minSize = 5, maxSize = 40;
-            const minPop = 2000, maxPop = 900000;
+            const minSize = 5, maxSize = 25;
+            const minPop = 200, maxPop = 180000;
             size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
             size = Math.max(minSize, Math.min(size, maxSize));
     }
