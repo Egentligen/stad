@@ -22,7 +22,7 @@ const malmoMarkerSizeRatio = 30;
 const minSize = 3, maxSize = 20;
 const minPop = 200, maxPop = 180000;
 const xOffset = 0.005;
-const yOffset = -0.14;
+const yOffset = -0.15;
 const markerSize = 1;
 
 let namedCities = new Set();
@@ -122,11 +122,11 @@ imageBox.addEventListener("wheel", e => {
 // Update map & marker transform
 // -------------------
 
-function updateTransform() {
-    mapImage.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
-    markerLayer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
-}
+const mapWrapper = document.getElementById("mapWrapper");
 
+function updateTransform() {
+    mapWrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+}
 // -------------------
 // Lat/lng -> image coords
 // -------------------

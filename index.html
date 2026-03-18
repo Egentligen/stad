@@ -8,22 +8,25 @@
 </head>
 
 <body>
-
+    
     <h1>Hur många svenska städer kan du nämna?</h1>
 
-    <div class="input-container">
-        <input type="text" id="cityInput" placeholder="Nämn någon svensk stad...">
-    </div>
+    <div class="map-container">
+    
+        <div class="input-container">
+            <input type="text" id="cityInput" placeholder="Nämn någon svensk stad...">
+        </div>
 
-   <div class="map-container">
         <div class="zoom-controls">
             <button id="zoomIn">+</button>
             <button id="zoomOut">-</button>
         </div>
 
         <div class="image-box" id="imageBox">
-            <img id="swedenMap" src="map.png" alt="Map of Sweden">
-            <div id="markerLayer"></div>
+            <div id="mapWrapper">
+                <img id="swedenMap" src="map.png" alt="Map of Sweden">
+                <div id="markerLayer"></div>
+            </div>
         </div>
     </div>
     
