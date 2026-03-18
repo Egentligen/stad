@@ -16,13 +16,13 @@ let cities = [];
 let zoomLevel = 1, panX = 0, panY = 0;
 let isDragging = false, startX, startY;
 
-const stockholmMarkerSizeRatio = 50;
-const goteborgMarkerSizeRatio = 42.5;
-const malmoMarkerSizeRatio = 35;
-const minSize = 2, maxSize = 25;
+const stockholmMarkerSizeRatio = 45;
+const goteborgMarkerSizeRatio = 37.5;
+const malmoMarkerSizeRatio = 30;
+const minSize = 3, maxSize = 20;
 const minPop = 200, maxPop = 180000;
-const xOffset = 0.02;
-const yOffset = -0.125;
+const xOffset = 0.01;
+const yOffset = -0.13;
 const markerSize = 1;
 
 let namedCities = new Set();
@@ -211,7 +211,7 @@ cityInput.addEventListener("keydown", (e) => {
         const name = cityInput.value.trim().toLowerCase();
         const city = cities.find(c => c.name.toLowerCase() === name);
         if (!city) {
-            alert("City not found");
+            alert("Staden hittades inte");
         } else {
             showMarker(city);
             cityInput.value = "";
