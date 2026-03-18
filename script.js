@@ -170,7 +170,7 @@ function showMarker(city) {
     let pos = latLngToImagePosition(city.lat, city.lng);
 
     pos.x += xOffset * mapImage.clientWidth / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
-    pos.y -= yOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
+    pos.y += yOffset * mapImage.clientHeight / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
     const marker = document.createElement("div");
     marker.className = "marker";
