@@ -61,35 +61,35 @@ window.addEventListener("mouseup", () => {
 // Zoom controls
 // -------------------
 
-function zoomAtPoint(centerX, centerY, zoomFactor) {
-    const oldZoom = zoomLevel;
-    zoomLevel *= zoomFactor;
+function zoomAt(screenX, screenY, factor) {
+    // Convert screen → world (map space)
+    const worldX = (screenX - panX) / zoomLevel;
+    const worldY = (screenY - panY) / zoomLevel;
 
-    const scale = zoomLevel / oldZoom;
+    // Apply zoom
+    zoomLevel *= factor;
 
-    // Adjust pan so zoom is centered on given point
-    panX = centerX - (centerX - panX) * scale;
-    panY = centerY - (centerY - panY) * scale;
+    // Convert back world → screen
+    panX = screenX - worldX * zoomLevel;
+    panY = screenY - worldY * zoomLevel;
 
     updateTransform();
 }
 
-// Zoom in button
 zoomIn.addEventListener("click", () => {
     const rect = imageBox.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    zoomAtPoint(centerX, centerY, 1.2);
+    zoomAt(centerX, centerY, 1.2);
 });
 
-// Zoom out button
 zoomOut.addEventListener("click", () => {
     const rect = imageBox.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    zoomAtPoint(centerX, centerY, 1 / 1.2);
+    zoomAt(centerX, centerY, 1 / 1.2);
 });
 
 imageBox.addEventListener("wheel", e => {
@@ -97,23 +97,23 @@ imageBox.addEventListener("wheel", e => {
 
     const rect = imageBox.getBoundingClientRect();
 
-    // Mouse position inside the container
+    // Mouse position in screen space
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
     const zoomFactor = 1.1;
-    const oldZoom = zoomLevel;
 
-    // Update zoom
+    // Convert mouse position into "world" (unscaled map space)
+    const worldX = (mouseX - panX) / zoomLevel;
+    const worldY = (mouseY - panY) / zoomLevel;
+
+    // Apply zoom
     if (e.deltaY < 0) zoomLevel *= zoomFactor;
     else zoomLevel /= zoomFactor;
 
-    // Calculate scale change
-    const scale = zoomLevel / oldZoom;
-
-    // Adjust pan so zoom happens around cursor
-    panX = mouseX - (mouseX - panX) * scale;
-    panY = mouseY - (mouseY - panY) * scale;
+    // Convert back to screen space so the same point stays under cursor
+    panX = mouseX - worldX * zoomLevel;
+    panY = mouseY - worldY * zoomLevel;
 
     updateTransform();
 });

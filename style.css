@@ -1,18 +1,18 @@
 body { 
   background: #30343D; 
   font-family: Arial, sans-serif; 
-  text-align: center; }
+  text-align: center; 
+}
 
 h1{
 margin-bottom:20px;
 }
 
 .input-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    position: relative;
-    top: 20px;
+  position: absolute;
+  top: 20px;
+  transform: translateX(-50%);
+  z-index: 20;
 }
 
 #cityInput {
@@ -25,7 +25,7 @@ margin-bottom:20px;
 .map-container { 
   position: relative;
   width: 100%;
-  margin: 0;
+  margin-bottom: 40px;
 }
 
 .image-box{ 
