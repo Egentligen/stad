@@ -21,7 +21,7 @@ const goteborgMarkerSizeRatio = 37.5;
 const malmoMarkerSizeRatio = 30;
 const minSize = 3, maxSize = 20;
 const minPop = 200, maxPop = 180000;
-const xOffset = 0.1;
+const xOffset = 0.02;
 const yOffset = 0.2;
 const markerSize = 1;
 
