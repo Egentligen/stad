@@ -21,7 +21,7 @@ const goteborgMarkerSizeRatio = 37.5;
 const malmoMarkerSizeRatio = 30;
 const minSize = 3, maxSize = 20;
 const minPop = 200, maxPop = 180000;
-const xOffset = 0.02;
+const xOffset = 0.01;
 const yOffset = 0.2;
 const markerSize = 1;
 
@@ -189,6 +189,8 @@ function showMarker(city) {
             size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
             size = Math.max(minSize, Math.min(size, maxSize)) * markerSize;
     }
+
+    size = Math.round(size);
 
     marker.style.width = size + "px";
     marker.style.height = size + "px";
