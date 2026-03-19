@@ -176,7 +176,7 @@ function getMarkerSize(city) {
     // -------------------------------
     // City population for marker size
     const minPop = 200, maxPop = 180000;
-    const minSize = 3, maxSize = 20;
+    const minSize = 3, maxSize = 22;
     // -------------------------------
 
     let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
@@ -258,6 +258,8 @@ cityInput.addEventListener("keydown", e => {
 
     if (!city) {
         alert("Staden hittades inte");
+    } else if (namedCities.has(city.name)) {
+        alert("Staden är redan nämnd");
     } else {
         showMarker(city);
         cityInput.value = "";
