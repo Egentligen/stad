@@ -9,7 +9,6 @@ h1{
   font-weight: bold;
   font-size: 32px;
   margin-top:20px;
-  margin-bottom:20px;
 }
 
 .input-container {
@@ -100,12 +99,10 @@ h1{
   position: absolute;
   bottom: 10px;
   left: 10px;
-
   color: white;
   font-weight: bold;
   font-size: 16px;
   text-align: left;
-
   z-index: 30;
 }
 

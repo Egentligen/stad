@@ -128,34 +128,17 @@ function updateTransform() {
 function latLngToImagePosition(lat, lng) {
     const img = mapImage;
 
-    const imgAspect = img.naturalWidth / img.naturalHeight;
-    const boxAspect = img.clientWidth / img.clientHeight;
+    const scaleX = img.clientWidth / img.naturalWidth;
+    const scaleY = img.clientHeight / img.naturalHeight;
+    const scale = Math.min(scaleX, scaleY);
 
-    let w, h, offsetX, offsetY;
+    const w = img.naturalWidth * scale;
+    const h = img.naturalHeight * scale;
 
-    if (imgAspect > boxAspect) {
-        w = img.clientWidth;
-        h = w / imgAspect;
-
-        // -------------------------
-        // Vertical placement offset
-        offsetX = 0;
-        // -------------------------
-
-        offsetY = (img.clientHeight - h) / 2;
-    } else {
-        h = img.clientHeight;
-        w = h * imgAspect;
-        offsetX = (img.clientWidth - w) / 2;
-
-        // ---------------------------
-        // Horizontal placement offset
-        offsetY = 2;
-        // ---------------------------
-    }
+    const offsetX = (img.clientWidth - w) / 2;
+    const offsetY = (img.clientHeight - h) / 2;
 
     const xRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
-
     const yRatio = 1 - (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
     return {
