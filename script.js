@@ -176,7 +176,7 @@ function getMarkerSize(city) {
     // -------------------------------
     // City population for marker size
     const minPop = 200, maxPop = 180000;
-    const minSize = 3, maxSize = 22;
+    const minSize = 3, maxSize = 21;
     // -------------------------------
 
     let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
