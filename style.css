@@ -76,7 +76,20 @@ h1{
   transform: translate(-50%, -50%);
   background-color: yellow;
   opacity: 0.7;
+  pointer-events: auto;
+}
+
+#cityInfoHover {
+  position: absolute;
+  background: #ffffff;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  display: none;
   pointer-events: none;
+  z-index: 100;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 #stats {
