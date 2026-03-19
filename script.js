@@ -125,7 +125,7 @@ function updateTransform() {
 // COORDINATES TO IMAGE-POSITION
 // -------------------
 
-function latLngToImagePosition(lat, lng) {
+function latLngToImagePosition(lat, lng, offsetX = 0, offsetY = 0) {
     const img = mapImage;
 
     const scaleX = img.clientWidth / img.naturalWidth;
@@ -135,15 +135,15 @@ function latLngToImagePosition(lat, lng) {
     const w = img.naturalWidth * scale;
     const h = img.naturalHeight * scale;
 
-    const offsetX = (img.clientWidth - w) / 2;
-    const offsetY = (img.clientHeight - h) / 2;
+    const baseOffsetX = (img.clientWidth - w) / 2;
+    const baseOffsetY = (img.clientHeight - h) / 2;
 
     const xRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
     const yRatio = 1 - (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
     return {
-        x: xRatio * w + offsetX,
-        y: yRatio * h + offsetY
+        x: xRatio * w + baseOffsetX + xRatio * w * offsetX,
+        y: yRatio * h + baseOffsetY + yRatio * h * offsetY
     };
 }
 
@@ -153,15 +153,16 @@ function latLngToImagePosition(lat, lng) {
 
 //Get size
 function getMarkerSize(city) {
-
-    // ---------------------
-    // Specific marker sizes
     const specifiedSizes = {
+
+        // ---------------------
+        // Specific marker sizes
         stockholm: 45,
         goteborg: 37.5,
         malmo: 30
+        // ---------------------
+
     };
-    // ---------------------
 
     const name = normalizeText(city.name);
 
@@ -188,7 +189,7 @@ function showMarker(city) {
         updateStats();
     }
 
-    const pos = latLngToImagePosition(city.lat, city.lng);
+    const pos = latLngToImagePosition(city.lat, city.lng, 0.01, 0.02); 
 
     const marker = document.createElement("div");
     marker.className = "marker";
