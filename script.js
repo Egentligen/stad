@@ -8,19 +8,19 @@ const zoomOut = document.getElementById("zoomOut");
 const cityInput = document.getElementById("cityInput");
 
 // Global constants
-
-// ----------------------------
-// Real-world coardinates reach
 const swedenBoundingBox = { 
+
+    // ----------------------------
+    // Real-world coardinates reach
     minLat: 55.1, minLng: 11.1, 
     maxLat: 69,   maxLng: 24.4 
+    // ----------------------------
 };
-// ----------------------------
 
 // -------------------
 // Zooming constraints
-const minZoom = 0.5;
-const maxZoom = 5;
+const minZoom = 0.6;
+const maxZoom = 7;
 // -------------------
 
 // Global variables
@@ -125,7 +125,7 @@ function updateTransform() {
 // COORDINATES TO IMAGE-POSITION
 // -------------------
 
-function latLngToImagePosition(lat, lng, offsetX = 0, offsetY = 0) {
+function latLngToImagePosition(lat, lng) {
     const img = mapImage;
 
     const scaleX = img.clientWidth / img.naturalWidth;
@@ -140,6 +140,12 @@ function latLngToImagePosition(lat, lng, offsetX = 0, offsetY = 0) {
 
     const xRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
     const yRatio = 1 - (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
+
+    // ---------------------
+    // Marker postion offset
+    const offsetX = 0.02;
+    const offsetY = 0.01;
+    // ---------------------
 
     return {
         x: xRatio * w + baseOffsetX + xRatio * w * offsetX,
@@ -161,7 +167,6 @@ function getMarkerSize(city) {
         goteborg: 37.5,
         malmo: 30
         // ---------------------
-
     };
 
     const name = normalizeText(city.name);
@@ -189,7 +194,7 @@ function showMarker(city) {
         updateStats();
     }
 
-    const pos = latLngToImagePosition(city.lat, city.lng, 0.01, 0.02); 
+    const pos = latLngToImagePosition(city.lat, city.lng); 
 
     const marker = document.createElement("div");
     marker.className = "marker";
