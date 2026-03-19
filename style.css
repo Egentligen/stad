@@ -1,16 +1,37 @@
+/* ------------------- */
+/* PAGE LAYOUT */
+/* ------------------- */
+
 body { 
   background: #30343D; 
   font-family: Arial, sans-serif; 
   text-align: center; 
+  margin: 0;
 }
 
-h1{
-  color: white;
-  font-weight: bold;
+h1 {
+  color: #fff;
   font-size: 32px;
-  margin-top:20px;
-  margin-bottom:20px;
+  font-weight: bold;
+  margin: 20px 0;
 }
+
+.map-container { 
+  position: relative;
+  width: 100%;
+}
+
+.image-box { 
+  position: relative;
+  width: 100%; 
+  height: 1100px; 
+  background: #1E2026; 
+  overflow: hidden; 
+}
+
+/* ------------------- */
+/* SEARCH */
+/* ------------------- */
 
 .input-container {
   position: absolute;
@@ -21,63 +42,56 @@ h1{
 }
 
 #cityInput {
-  padding: 10px;
   width: 300px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.map-container { 
-  position: relative;
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.image-box{ 
-  position: relative;
-   width: 100%; 
-   height: 1100px; 
-   background: #1E2026; 
-   overflow: hidden; 
-}
+/* ------------------- */
+/* MAP */
+/* ------------------- */
 
 #mapWrapper {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   transform-origin: 0 0;
-  cursor: grab;
 }
 
-#swedenMap{ 
-  width: 100%; 
-  height: 100%; 
-  object-fit: contain; 
-  display: block; 
-  user-select: none; 
-  pointer-events: none; 
+#swedenMap {
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  pointer-events: none;
 }
 
-#markerLayer{
-  position: absolute; 
-  top: 0; 
-  left: 0; 
-  width: 100%; 
-  height: 100%; 
-  pointer-events: none; 
+#markerLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 98%;
 }
+
+#markerLayer {
+  pointer-events: none;
+}
+
+/* ------------------- */
+/* MARKERS */
+/* ------------------- */
 
 .marker {
   position: absolute;
-  border-radius: 50%;
-  border: 1px solid black;
   transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid #000;
   background-color: rgb(255, 230, 0);
   opacity: 0.7;
   pointer-events: auto;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  transition: 
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .marker:hover {
@@ -85,32 +99,42 @@ h1{
   transform: translate(-50%, -50%) scale(1.2);
 }
 
-#cityInfoHover {
+#cityInfoTooltip {
   position: absolute;
-  background: #f9f9f9;
-  padding: 3px 10px;
   display: none;
-  pointer-events: none;
-  text-align: left;
-  z-index: 100;
+  padding: 3px 10px;
+  background: #f9f9f9;
   font-size: 14px;
+  text-align: left;
+
+  pointer-events: none;
+  z-index: 100;
+
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
+
+/* ------------------- */
+/* STATS */
+/* ------------------- */
 
 #stats {
   position: absolute;
   bottom: 10px;
   left: 10px;
 
-  color: white;
+  color: #fff;
+  font-size: 16px;
   font-weight: bold;
-  font-size: 14px;
   text-align: left;
 
   z-index: 30;
 }
 
-.zoom-controls{ 
+/* ------------------- */
+/* ZOOM */
+/* ------------------- */
+
+.zoom-controls { 
   position: absolute; 
   top: 10px; 
   right: 10px; 
@@ -119,7 +143,7 @@ h1{
   z-index: 10; 
 }
 
-.zoom-controls button{ 
+.zoom-controls button { 
   margin: 2px; 
   padding: 6px 10px; 
   cursor: pointer; 

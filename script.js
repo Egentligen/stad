@@ -1,8 +1,4 @@
-const swedenBoundingBox = { 
-    minLat: 55.1, minLng: 11.1, 
-    maxLat: 69,   maxLng: 24.4 
-};
-
+// DOM element references
 const mapImage = document.getElementById("swedenMap");
 const markerLayer = document.getElementById("markerLayer");
 const imageBox = document.getElementById("imageBox");
@@ -11,19 +7,27 @@ const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
 const cityInput = document.getElementById("cityInput");
 
+// Global constants
+
+// ----------------------------
+// Real-world coardinates reach
+const swedenBoundingBox = { 
+    minLat: 55.1, minLng: 11.1, 
+    maxLat: 69,   maxLng: 24.4 
+};
+// ----------------------------
+
+// -------------------
+// Zooming constraints
+const minZoom = 0.5;
+const maxZoom = 5;
+// -------------------
+
+// Global variables
 let cities = [];
-
-// -------------------
-// STATE
-// -------------------
-
 let zoomLevel = 1;
 let panX = 0, panY = 0;
 let isDragging = false, startX, startY;
-
-const minZoom = 0.5;
-const maxZoom = 5;
-
 let namedCities = new Set();
 let totalPopulation = 0;
 
@@ -31,7 +35,7 @@ let totalPopulation = 0;
 // HELPERS
 // -------------------
 
-// Normalize Swedish characters
+// Allow special characters
 function normalizeText(str) {
     return str
         .toLowerCase()
@@ -43,7 +47,7 @@ function normalizeText(str) {
 const clamp = (val, min, max) => Math.min(max, Math.max(min, val));
 
 // -------------------
-// LOAD DATA
+// LOAD CITY DATA
 // -------------------
 
 (async function loadCities() {
@@ -74,6 +78,7 @@ window.addEventListener("mouseup", () => isDragging = false);
 // ZOOM
 // -------------------
 
+// Zoom at point
 function zoomAt(x, y, factor) {
     const worldX = (x - panX) / zoomLevel;
     const worldY = (y - panY) / zoomLevel;
@@ -86,6 +91,7 @@ function zoomAt(x, y, factor) {
     updateTransform();
 }
 
+// Buttons
 zoomIn.onclick = () => zoomCenter(1.2);
 zoomOut.onclick = () => zoomCenter(1 / 1.2);
 
@@ -94,6 +100,7 @@ function zoomCenter(factor) {
     zoomAt(rect.width / 2, rect.height / 2, factor);
 }
 
+// Wheel
 imageBox.addEventListener("wheel", e => {
     e.preventDefault();
     const rect = imageBox.getBoundingClientRect();
@@ -106,7 +113,7 @@ imageBox.addEventListener("wheel", e => {
 });
 
 // -------------------
-// TRANSFORM
+// MAP TRANSFORM
 // -------------------
 
 function updateTransform() {
@@ -115,7 +122,7 @@ function updateTransform() {
 }
 
 // -------------------
-// COORDINATES
+// COORDINATES TO IMAGE-POSITION
 // -------------------
 
 function latLngToImagePosition(lat, lng) {
@@ -129,20 +136,27 @@ function latLngToImagePosition(lat, lng) {
     if (imgAspect > boxAspect) {
         w = img.clientWidth;
         h = w / imgAspect;
-        offsetX = 0;
+
+        // -------------------------
+        // Vertical placement offset
+        offsetX = 0.01;
+        // -------------------------
+
         offsetY = (img.clientHeight - h) / 2;
     } else {
         h = img.clientHeight;
         w = h * imgAspect;
         offsetX = (img.clientWidth - w) / 2;
-        offsetY = 0;
+
+        // ---------------------------
+        // Horizontal placement offset
+        offsetY = 0.2;
+        // ---------------------------
     }
 
-    const xRatio = (lng - swedenBoundingBox.minLng) /
-                   (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
+    const xRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
 
-    const yRatio = 1 - (lat - swedenBoundingBox.minLat) /
-                   (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
+    const yRatio = 1 - (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
     return {
         x: xRatio * w + offsetX,
@@ -154,27 +168,37 @@ function latLngToImagePosition(lat, lng) {
 // MARKERS
 // -------------------
 
+//Get size
 function getMarkerSize(city) {
-    const special = {
+
+    // ---------------------
+    // Specific marker sizes
+    const specifiedSizes = {
         stockholm: 45,
         goteborg: 37.5,
         malmo: 30
     };
+    // ---------------------
 
     const name = normalizeText(city.name);
 
-    if (special[name]) return special[name];
+    if (specifiedSizes[name]) return specifiedSizes[name];
 
+    // -------------------------------
+    // City population for marker size
     const minPop = 200, maxPop = 180000;
     const minSize = 3, maxSize = 20;
+    // -------------------------------
 
-    let size = ((city.population - minPop) / (maxPop - minPop)) *
-               (maxSize - minSize) + minSize;
+    let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
 
     return clamp(size, minSize, maxSize);
 }
 
-function showMarker(city) {
+//Place
+function showMarker(city) { 
+    // Transform
+    
     if (!namedCities.has(city.name)) {
         namedCities.add(city.name);
         totalPopulation += city.population;
@@ -195,23 +219,25 @@ function showMarker(city) {
         top: pos.y + "px"
     });
 
-    const hoverBox = document.getElementById("cityInfoHover");
+    // Tooltip 
+
+    const tooltip = document.getElementById("cityInfoTooltip");
 
     marker.onmouseenter = e => {
-        hoverBox.style.display = "block";
-        hoverBox.innerHTML = `
+        tooltip.style.display = "block";
+        tooltip.innerHTML = `
             <strong>${city.name}</strong><br>
-            Population: ${city.population.toLocaleString()}
+            Befolkning: ${city.population.toLocaleString()}
         `;
     };
 
     marker.onmousemove = e => {
-        hoverBox.style.left = e.pageX + 10 + "px";
-        hoverBox.style.top = e.pageY + 10 + "px";
+        tooltip.style.left = e.pageX + 10 + "px";
+        tooltip.style.top = e.pageY + 10 + "px";
     };
 
     marker.onmouseleave = () => {
-        hoverBox.style.display = "none";
+        tooltip.style.display = "none";
     };
 
     markerLayer.appendChild(marker);

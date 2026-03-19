@@ -6,11 +6,8 @@
 <title>Hur många svenska städer kan du nämna?</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    
     <h1>Hur många svenska städer kan du nämna?</h1>
-
     <div class="map-container">
         <div class="input-container">
             <input type="text" id="cityInput" placeholder="Nämn någon svensk stad...">
@@ -24,27 +21,22 @@
             <div id="totalCities"></div>
             <div id="totalPopulation"></div>
         </div>
-
             <div id="mapWrapper">
                 <img id="swedenMap" src="map.png">
                 <div id="markerLayer"></div>
             </div>
         </div>
     </div>
-
-    <div id="cityInfoHover">
+    <div id="cityInfoTooltip">
         <p id="hoverCityName"></p>
         <p id="hoverCityPopulation"></p>    
     </div>
-
     <script src="script.js"></script>
-
     <footer style="text-align:center; margin-top:20px; font-size:0.9em;">
         Data: GeoNames. Licens: 
         <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">
          Creative Commons Attribution 4.0
         </a> license.
     </footer>
-
 </body>
 </html>
