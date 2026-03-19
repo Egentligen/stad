@@ -19,8 +19,8 @@ const swedenBoundingBox = {
 
 // -------------------
 // Zooming constraints
-const minZoom = 0.6;
-const maxZoom = 7;
+const minZoom = 0.8;
+const maxZoom = 8;
 // -------------------
 
 // Global variables
@@ -144,7 +144,7 @@ function latLngToImagePosition(lat, lng) {
     // ---------------------
     // Marker postion offset
     const offsetX = 0.02;
-    const offsetY = 0.01;
+    const offsetY = 0.017;
     // ---------------------
 
     return {
