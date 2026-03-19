@@ -150,7 +150,7 @@ function latLngToImagePosition(lat, lng) {
 
         // ---------------------------
         // Horizontal placement offset
-        offsetY = 0.4;
+        offsetY = 2;
         // ---------------------------
     }
 
