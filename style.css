@@ -84,7 +84,7 @@ h1{
   transform: translate(-50%, -50%) scale(1.2);
 }
 
-#cityInfoHover {
+#cityInfoTooltip {
   position: absolute;
   background: #f9f9f9;
   padding: 3px 10px;
