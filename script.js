@@ -139,7 +139,7 @@ function latLngToImagePosition(lat, lng) {
 
         // -------------------------
         // Vertical placement offset
-        offsetX = 0.01;
+        offsetX = 0;
         // -------------------------
 
         offsetY = (img.clientHeight - h) / 2;
@@ -150,7 +150,7 @@ function latLngToImagePosition(lat, lng) {
 
         // ---------------------------
         // Horizontal placement offset
-        offsetY = 0.2;
+        offsetY = 0.4;
         // ---------------------------
     }
 
