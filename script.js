@@ -7,21 +7,13 @@ const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
 const cityInput = document.getElementById("cityInput");
 
-// Bounding box
-const swedenBoundingBox = { 
-    minLat: 55.1, minLng: 11.1, 
-    maxLat: 69,   maxLng: 24.4 
-};
-
-// Zoom constraints
-const minZoom = 0.8;
-const maxZoom = 8;
-
 // Global variables
 let cities = [];
+
 let zoomLevel = 1;
 let panX = 0, panY = 0;
 let isDragging = false, startX, startY;
+
 let namedCities = new Set();
 let totalPopulation = 0;
 
@@ -71,6 +63,9 @@ window.addEventListener("mouseup", () => isDragging = false);
 // -------------------
 
 function zoomAt(x, y, factor) {
+    const minZoom = 0.8;
+    const maxZoom = 8;
+
     const worldX = (x - panX) / zoomLevel;
     const worldY = (y - panY) / zoomLevel;
 
@@ -109,14 +104,22 @@ function updateTransform() {
     mapWrapper.style.transform =
         `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
 
-    updateAllMarkers(); // 🔥 keep markers aligned
+    updateAllMarkers();
 }
 
 // -------------------
-// COORDINATES → IMAGE POSITION
+// COORDINATES TO IMAGE POSITION
 // -------------------
 
 function latLngToImagePosition(lat, lng) {
+    const swedenBoundingBox = { 
+    minLat: 55.1, minLng: 11.1, 
+    maxLat: 69,   maxLng: 24.4 
+    };
+    
+    const offsetX = 0.02;
+    const offsetY = 0.017;
+
     const img = mapImage;
 
     const scaleX = img.clientWidth / img.naturalWidth;
@@ -132,9 +135,6 @@ function latLngToImagePosition(lat, lng) {
     const xRatio = (lng - swedenBoundingBox.minLng) / (swedenBoundingBox.maxLng - swedenBoundingBox.minLng);
     const yRatio = 1 - (lat - swedenBoundingBox.minLat) / (swedenBoundingBox.maxLat - swedenBoundingBox.minLat);
 
-    const offsetX = 0.02;
-    const offsetY = 0.017;
-
     return {
         x: xRatio * w + baseOffsetX + xRatio * w * offsetX,
         y: yRatio * h + baseOffsetY + yRatio * h * offsetY
@@ -142,7 +142,7 @@ function latLngToImagePosition(lat, lng) {
 }
 
 // -------------------
-// UPDATE ALL MARKERS (FIX)
+// MARKERS
 // -------------------
 
 function updateAllMarkers() {
@@ -157,10 +157,6 @@ function updateAllMarkers() {
     });
 }
 
-// -------------------
-// MARKERS
-// -------------------
-
 function getMarkerSize(city) {
     const specifiedSizes = {
         stockholm: 45,
@@ -168,15 +164,28 @@ function getMarkerSize(city) {
         malmo: 30
     };
 
+    const minLargePop = 100000, maxLargePop = 180000;
+    const minLargeSize = 18, maxLargeSize = 21;
+
+    const minSmallPop = 200, maxSmallPop = 100000;
+    const minSmallSize = 4, maxSmallSize = 18;
+
     const name = normalizeText(city.name);
     if (specifiedSizes[name]) return specifiedSizes[name];
 
-    const minPop = 200, maxPop = 180000;
-    const minSize = 3, maxSize = 21;
+    let size;
 
-    let size = ((city.population - minPop) / (maxPop - minPop)) * (maxSize - minSize) + minSize;
+    if (city.population < 100000) {
+        size = ((city.population - minSmallPop) / (maxSmallPop - minSmallPop)) 
+             * (maxSmallSize - minSmallSize) + minSmallSize;
 
-    return clamp(size, minSize, maxSize);
+        return clamp(size, minSmallSize, maxSmallSize);
+    } else {
+        size = ((city.population - minLargePop) / (maxLargePop - minLargePop)) 
+             * (maxLargeSize - minLargeSize) + minLargeSize;
+
+        return clamp(size, minLargeSize, maxLargeSize);
+    }
 }
 
 function showMarker(city) { 
@@ -191,7 +200,6 @@ function showMarker(city) {
     const marker = document.createElement("div");
     marker.className = "marker";
 
-    // 🔥 store city data for recalculation
     marker.dataset.city = JSON.stringify(city);
 
     const size = Math.round(getMarkerSize(city));
@@ -224,6 +232,12 @@ function showMarker(city) {
 
     markerLayer.appendChild(marker);
 }
+
+window.addEventListener("resize", updateAllMarkers);
+
+mapImage.onload = () => {
+    updateAllMarkers();
+};
 
 // -------------------
 // STATS
@@ -258,15 +272,3 @@ cityInput.addEventListener("keydown", e => {
         cityInput.value = "";
     }
 });
-
-// -------------------
-// IMPORTANT FIXES
-// -------------------
-
-// Recalculate markers on resize / fullscreen / zoom
-window.addEventListener("resize", updateAllMarkers);
-
-// Ensure correct positions after image loads
-mapImage.onload = () => {
-    updateAllMarkers();
-};
