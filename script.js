@@ -164,10 +164,10 @@ function getMarkerSize(city) {
         malmo: 30
     };
 
-    const minLargePop = 100000, maxLargePop = 180000;
+    const minLargePop = 78000, maxLargePop = 180000;
     const minLargeSize = 18, maxLargeSize = 21;
 
-    const minSmallPop = 200, maxSmallPop = 100000;
+    const minSmallPop = 200, maxSmallPop = 78000;
     const minSmallSize = 4, maxSmallSize = 18;
 
     const name = normalizeText(city.name);
