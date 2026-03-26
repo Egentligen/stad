@@ -167,7 +167,7 @@ function getMarkerSize(city) {
     const minLargePop = 78000, maxLargePop = 180000;
     const minLargeSize = 18, maxLargeSize = 21;
 
-    const minSmallPop = 200, maxSmallPop = 78000;
+    const minSmallPop = 1, maxSmallPop = 78000;
     const minSmallSize = 4, maxSmallSize = 18;
 
     const name = normalizeText(city.name);
